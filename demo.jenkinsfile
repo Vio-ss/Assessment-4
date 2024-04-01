@@ -1,18 +1,44 @@
 pipeline {
     agent any
     stages {
-        stage('Build') {
+         stage('Checkout') {
             steps {
-                checkout scmGit(branches: [[name: '*/main']], extensions: [], userRemoteConfigs: [[url: 'https://github.com/Vio-ss/Assessment-4']])
-                bat "mvn clean"
+                git branch: 'main', url: 'https://github.com/Vio-ss/Assessment-4'
+                
             }
         }
-        stage('test') {
+        stage('Build') {
+           steps {
+               checkout scmGit(branches: [[name: '*/main']], extensions: [], userRemoteConfigs: [[url: 'https://github.com/Vio-ss/Assessment-4']])
+               bat "mvn clean package"
+           }
+        }
+        stage('Test') {
             steps {
-                checkout scmGit(branches: [[name: '*/main']], extensions: [], userRemoteConfigs: [[url: 'https://github.com/Vio-ss/Assessment-4']])
+                
                 bat "mvn test"
+            }
+        }
+        stage('Verify') {
+            steps {
+                
+                bat "mvn verify"
+            }
+        }
+        
+        stage('Deploy') {
+            steps {
+                
+                echo "Deploy"
             }
         }
         
     }
+    post{
+        always{
+            deleteDir()
+        }
+
+    }
+
 }
